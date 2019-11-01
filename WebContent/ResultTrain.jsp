@@ -16,7 +16,7 @@
 		NodeList traingradename = (NodeList)request.getSession().getAttribute("traingradename");
 		NodeList arrplacename = (NodeList)request.getSession().getAttribute("arrplacename");
 		NodeList depplacename = (NodeList)request.getSession().getAttribute("depplacename");
-		
+		////////////////////////
 		
 		out.println("<h1>열차 시간표</h1>");
 	%>
