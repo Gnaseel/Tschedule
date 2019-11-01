@@ -28,6 +28,7 @@ public class AIOParsing extends HttpServlet {
 		// 열차 정보 관련 서비스
 		if(name.equals("train"))		
 			re+="/TrainInfoService";
+		//else if(name.equals())
 		return re;
 	}
 	private String OperationName(String name) {
@@ -35,6 +36,8 @@ public class AIOParsing extends HttpServlet {
 		// 출발지, 목적지, 시간을 사용해서 열차를 조회해주는 오퍼레이션
 		if(name.equals("getTrain"))
 			re+="/getStrtpntAlocFndTrainInfo";
+		else if(name.equals("getCityCode"))
+			re+="/getCtyCodeList";
 		return re;
 	}
 	public ArrayList<AddrInfoDTO> ParseAddrInfo(String query, HttpServletRequest request){
@@ -87,6 +90,39 @@ public class AIOParsing extends HttpServlet {
 		}
 		return TDTOarray;
 	}
+	public NodeList[] XMLParse( String url,String[] name){
+		NodeList[] nodes = new NodeList[name.length];
+		try {
+			
+			DocumentBuilderFactory docF = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docB = docF.newDocumentBuilder();
+			Document doc = docB.parse(url);
+			for(int i=0;i<name.length;i++) {
+				nodes[i]=doc.getElementsByTagName(name[i]);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return nodes;
+	}
+	public ArrayList<StationInfoDTO> ParseStationInfo(String query, HttpServletRequest request){
+		System.out.println("PAR IN");
+		String[] names = new String[4];
+		String[] cityCode = new String[1];
+		String operName = ServiceName("train")+OperationName("getCityCode");
+		String path = TransportURI + operName + key + query;
+		cityCode[0]="citycode";
+		names[0]="stationName";
+		names[1]="stationCode";
+		names[2]="coordX";
+		names[3]="coordY";
+		System.out.println("path is = "+path);
+		ArrayList<StationInfoDTO> SDTOArray = new ArrayList<StationInfoDTO>();
+		ArrayList<StationInfoDTO> cityCodeArray = new ArrayList<StationInfoDTO>();
+		XMLParse(path, cityCode);
+		return SDTOArray;
+	}
+	
 	/*
 	public ArrayList<StationDTO> PraseStationInfo(String query, HttpServletRequest request){
 		s

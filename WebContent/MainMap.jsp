@@ -250,13 +250,16 @@
 							}
 							i++;
 						}
+						$("#resultJuso").append("</br> <input type=\"button\" value = \"노선선택\" onClick=\"location.href='FrontController/search.do?depPlaceId=\"++\"'\")>");
+						
 					}
+					function selectPath(){}
 					var startObj=null;
 					var endObj=null;
 					function seartStartPath(){
 							//------------------------시작->시작역 경로
 						var uri="https://api.odsay.com/v1/api/searchPubTransPath?&SX=" +AddrDep.entX+"&SY="+AddrDep.entY+"&EX="+sx+"&EY="+sy+"&apiKey=vKj%2FKXP67Uh63gVLXld7CXB%2BFTqXtEuP20r5gpBwPw0";
-						//$("#resultJuso").append("uri  = "+uri);
+						$("#resultJuso").append("</br> 시작 uri  = "+uri);
 						$.ajax({
 							type:"post",
 							dataType:"JSON",
@@ -284,6 +287,7 @@
 					function seartEndPath(){
 						//------------------------도착역->도착 경로
 						var uri="https://api.odsay.com/v1/api/searchPubTransPath?&SX=" +ex+ "&SY="+ey+"&EX="+AddrArv.entX+"&EY="+AddrArv.entY+"&apiKey=vKj%2FKXP67Uh63gVLXld7CXB%2BFTqXtEuP20r5gpBwPw0";
+						$("#resultJuso").append("</br> 도착 uri  = "+uri);
 						$.ajax({
 							type:"post",
 							dataType:"JSON",
