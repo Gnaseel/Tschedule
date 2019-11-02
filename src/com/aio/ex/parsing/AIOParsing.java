@@ -38,6 +38,8 @@ public class AIOParsing extends HttpServlet {
 			re+="/getStrtpntAlocFndTrainInfo";
 		else if(name.equals("getCityCode"))
 			re+="/getCtyCodeList";
+		else if(name.equals("getStationInfo"))
+			re+="/getCtyAcctoTrainSttnList";
 		return re;
 	}
 	public ArrayList<AddrInfoDTO> ParseAddrInfo(String query, HttpServletRequest request){
@@ -90,7 +92,7 @@ public class AIOParsing extends HttpServlet {
 		}
 		return TDTOarray;
 	}
-	public NodeList[] XMLParse( String url,String[] name){
+	public NodeList[] XMLParse(String url,String[] name){
 		NodeList[] nodes = new NodeList[name.length];
 		try {
 			
@@ -107,19 +109,46 @@ public class AIOParsing extends HttpServlet {
 	}
 	public ArrayList<StationInfoDTO> ParseStationInfo(String query, HttpServletRequest request){
 		System.out.println("PAR IN");
-		String[] names = new String[4];
-		String[] cityCode = new String[1];
-		String operName = ServiceName("train")+OperationName("getCityCode");
+		
+		
+		String[] names = new String[2];		//DB저장을 위한 컬럼 이름
+		String[] cityCode = new String[1];	//도시 번호에서 정보를 빼오기 위한 이름
+		String[] cityCodeData = new String[20];//실제 도시코드 데이터
+		//String[] 
+		String operName = ServiceName("train")+OperationName("getCityCode");	//도시코드 데이터를 얻기위한 오퍼
 		String path = TransportURI + operName + key + query;
 		cityCode[0]="citycode";
-		names[0]="stationName";
-		names[1]="stationCode";
-		names[2]="coordX";
-		names[3]="coordY";
+		names[0]="nodeid";
+		names[1]="nodename";
+		//names[0]="stationName";
+		//names[1]="stationCode";
+		//names[2]="coordX";
+		//names[3]="coordY";
 		System.out.println("path is = "+path);
 		ArrayList<StationInfoDTO> SDTOArray = new ArrayList<StationInfoDTO>();
-		ArrayList<StationInfoDTO> cityCodeArray = new ArrayList<StationInfoDTO>();
-		XMLParse(path, cityCode);
+		NodeList[] nodes =  XMLParse(path, cityCode);
+		NodeList[] cityNodes=null;
+		System.out.println("len = "+nodes[0].getLength());
+		
+		for(int i=0;i<nodes[0].getLength();i++) {
+			cityCodeData[i]=nodes[0].item(i).getTextContent();
+			System.out.println(nodes[0].item(i).getTextContent());
+		}
+		System.out.println("!");
+		operName=ServiceName("train")+OperationName("getStationInfo");
+		for(int i=0;i<nodes[0].getLength();i++) {
+			
+			path= TransportURI + operName+key+"&cityCode="+cityCodeData[i];
+			System.out.println("path = "+path);
+			cityNodes = XMLParse(path,names);
+			
+			for(int ii=0;ii<cityNodes[0].getLength();ii++) {
+				//System.out.println("! + "+cityNodes[0].item(ii).getTextContent());
+				//System.out.println("! + "+cityNodes[1].item(ii).getTextContent());
+				SDTOArray.add(new StationInfoDTO(cityNodes[0].item(ii), cityNodes[1].item(ii), null,null));
+				System.out.println("역 이름 = "+SDTOArray.get(ii).getStationName());
+			}
+		}
 		return SDTOArray;
 	}
 	

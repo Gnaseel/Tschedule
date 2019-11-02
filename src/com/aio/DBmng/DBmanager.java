@@ -2,6 +2,7 @@ package com.aio.DBmng;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.aio.ex.parsing.*;
+import com.aio.ex.dto.*;
 /**
  * Servlet implementation class DBmanager
  */
@@ -39,17 +41,20 @@ public class DBmanager extends HttpServlet {
 					String name=rSet.getString(1);
 					System.out.println("이름 = "+name);
 				}
-			
-			
-			
-			
-			
+				
+				AIOParsing p=new AIOParsing();
+				ArrayList<StationInfoDTO> arr= p.ParseStationInfo("", request);
+				for(int i=0;i<arr.size();i++) {
+					System.out.println("insert into station values('"+arr.get(i).getStationName()+"','"+arr.get(i).getStationCode()+"','0','0')");
+					stmt.executeQuery("insert into station values('"+arr.get(i).getStationName()+"','"+arr.get(i).getStationCode()+"','0','0')");
+				}
+				
+				
+				
 			} catch (Exception e) {
 			System.out.println("씨발련아");
 			e.printStackTrace();
 		}
-		AIOParsing p=new AIOParsing();
-		p.ParseStationInfo("", request);
 		
 		
 	}
