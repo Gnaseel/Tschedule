@@ -174,6 +174,7 @@
 					var sx,sy,ex,ey;
 					var shortPath;
 					var trainPath;
+					var times = new Array();
 					function searchPath(){
 						$('#depaAddr').html("");
 						$('#arriAddr').html("");
@@ -189,7 +190,6 @@
 							asnyc:"false",
 							success:function(data){
 								$("#resultJuso").append(uri);
-								alert(data.result);
 								var path=JSON.parse(JSON.stringify(data));
 								var minCount=0;
 								var minmax=0;
@@ -206,33 +206,51 @@
 											if(path.result.trainRequest.OBJ[min[ii]].time>path.result.trainRequest.OBJ[min[minmax]].time){
 												minmax=ii;
 											}
-										}
+										}	
 									}
 								}
 								shortPath=path.result.trainRequest;
-								sx=shortPath.OBJ[0].SX; sy=shortPath.OBJ[0].SY; ex=shortPath.OBJ[0].EX; ey=shortPath.OBJ[0].EY;
+								
 								$("#resultJuso").append("</br></br>최소 시간 기준 광역 3개</br>");
 								for (var i=0;i<3;i++){
+									sx=shortPath.OBJ[min[i]].SX; sy=shortPath.OBJ[min[i]].SY; ex=shortPath.OBJ[min[i]].EX; ey=shortPath.OBJ[min[i]].EY;
+									times[i]=0;
 									$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType);
-									$("#resultJuso").append("<input type=\"button\" value=\"상세보기\" onClick=\"tempDo()\" ></br>")
-									trainPath=shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType;
+									trainPath=shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType;
+									seartStartPath();
+									seartEndPath();
+									times[i]=tempDo();
+									var result = times[i]+shortPath.OBJ[min[i]].time;
+									$("#resultJuso").append("</br> 총 시간 = "+result+"</br></br>");
+									$("#resultJuso").append("<input type=\"button\" value=\"상세보기\" onClick=\"showDetailedPath()\" ></br>");
 								}
-								seartStartPath();
-								seartEndPath();
-								
 							}
 						});
 						
 					}
-					function tempDo(){
-						//alert("개수 = "+Object.keys(startObj.))
-						$("#resultJuso").html("</br>");
+					var privious=null;
+					//-------------------------------------------------경로의 전체 노선을 상세히 보여줌---------------
+					function showDetailedPath(){
+						$.ajax({
+							type:"post",
+							url:"",
+							dataType:"JSON",
+							asyns:false,
+							success:function(data){
+								//String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
+								request.getParameter("depPlaceId") ;
+							}
+						});
+						/*
+						privious= $("#resultJuso").html();
+						$("#resultJuso").html("");
 						var i=0;
+						//----------------------------------------------------시작역->시작
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
-							
 							if (startObj.subPath[i].trafficType==3){
 								$("#resultJuso").append("</br>"+startObj.subPath[i].distance+"m거리 "+startObj.subPath[i].sectionTime+"분 걷기");
+								
 							}else if(startObj.subPath[i].trafficType==2){
 								$("#resultJuso").append("</br>"+startObj.subPath[i].startName+"부터 "+startObj.subPath[i].endName+"까지"+startObj.subPath[i].lane[0].busNo+"번 버스 이동 <input type=\"button\" value = \"노선보기\">");
 							}
@@ -241,17 +259,53 @@
 						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType);
 						$("#resultJuso").append("</br>"+trainPath);
 						i=0;
+						//기차 출발, 도착 정보 받아오기
+						"FrontController/search.do"
+						//----------------------------------------------------도착역->도착
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
-							if (startObj.subPath[i].trafficType==3){
+							if (endObj.subPath[i].trafficType==3){
 								$("#resultJuso").append("</br>"+endObj.subPath[i].distance+"m거리 "+endObj.subPath[i].sectionTime+"분 걷기");
-							}else if(startObj.subPath[i].trafficType==2){
+							}else if(endObj.subPath[i].trafficType==2){
 								$("#resultJuso").append("</br>"+endObj.subPath[i].startName+"부터 "+endObj.subPath[i].endName+"까지"+endObj.subPath[i].lane[0].busNo+"번 버스 이동 <input type=\"button\" value = \"노선보기\">");
 							}
 							i++;
 						}
-						$("#resultJuso").append("</br> <input type=\"button\" value = \"노선선택\" onClick=\"location.href='FrontController/search.do?depPlaceId=\"++\"'\")>");
-						
+						$("#resultJuso").append("<input type=\"button\" id = \"goBack\" value=\"뒤로가기\"onClick=\"goBack();\" ></br>");
+						*/
+					}
+					function goBack(){
+						$("#resultJuso").html(privious);
+					}
+					function tempDo(){
+						var time=0;
+						var i=0;
+						//----------------------------------------------------시작역->시작
+						while(i<3){
+							//alert("type = "+startObj.subPath[i].trafficType);
+							if (startObj.subPath[i].trafficType==3){
+								time+=startObj.subPath[i].sectionTime;
+								
+							}else if(startObj.subPath[i].trafficType==2){
+								
+								time += startObj.subPath[i].sectionTime;
+							}
+							i++;
+						}
+						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType);
+						i=0;
+						//----------------------------------------------------도착역->도착
+						while(i<3){
+							//alert("type = "+startObj.subPath[i].trafficType);
+							if (endObj.subPath[i].trafficType==3){
+								time += endObj.subPath[i].sectionTime;
+							}else if(endObj.subPath[i].trafficType==2){
+								time += endObj.subPath[i].sectionTime;
+							}
+							i++;
+						}
+						//$("#resultJuso").append("</br> <input type=\"button\" value = \"노선선택\" onClick=\"location.href='FrontController/search.do?depPlaceId=\"++\"'\")>");
+						return time;
 					}
 					function selectPath(){}
 					var startObj=null;
@@ -264,7 +318,7 @@
 							type:"post",
 							dataType:"JSON",
 							url:uri,
-							async:"false",
+							async:false,
 							success:function(data){
 								
 								var paths=JSON.parse(JSON.stringify(data));
@@ -292,7 +346,7 @@
 							type:"post",
 							dataType:"JSON",
 							url:uri,
-							async:"false",
+							async:false,
 							success:function(data){
 								
 								var paths=JSON.parse(JSON.stringify(data));

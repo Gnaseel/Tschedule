@@ -39,6 +39,8 @@ public class FrontController extends HttpServlet {
  		
 		String uri=request.getRequestURI();
 		String conPath="/FrontController/"+request.getContextPath();
+		System.out.println("uri = "+uri);
+		System.out.println("conPath = "+conPath);
 		String com=uri.substring(conPath.length());
 		System.out.println("Command = "+com);
 		//------------------------------------------------------command-------------------------------------------------------------------------
