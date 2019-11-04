@@ -19,19 +19,15 @@ public class FrontController extends HttpServlet {
 
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 		doAction(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doAction(request, response);
 	}
 	
-	
-	
-	
-	
 	private void doAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("EUC-KR");
+		request.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html;charset=UTF-8"); 
 		System.out.println("----------------------------------------In doAction---------------------------------------------------");
 		String viewPage=null;
  		TCommand command=null;
@@ -48,7 +44,7 @@ public class FrontController extends HttpServlet {
 			System.out.println("SearchDo");
 			command = new Search_Do();
 			command.execute(request,response);
-			viewPage="/list.jsp";
+			viewPage="N";
 			
 		}else if(com.equals("nextpage.do")) {
 			System.out.println("nextpage.do");
@@ -57,13 +53,19 @@ public class FrontController extends HttpServlet {
 			command.execute(request, response);
 			
 			viewPage="/list.jsp";
-		}else {
+		}else if(com.equals("getCityCode.do")) {
+			System.out.println("getCityCode.do");
+			command= new GetCityCode_Do();
+			command.execute(request, response);
+			viewPage="N";
+		} else {
 			System.out.println("Nothing");
 		}
 		
 		
 		//------------------------------------------------------forward-------------------------------------------------------------------------
 		RequestDispatcher disp = request.getRequestDispatcher(viewPage);
+		if(!viewPage.equals("N"))
 		disp.forward(request, response);
 		
 	}

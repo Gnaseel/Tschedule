@@ -33,7 +33,6 @@ public class AIOParsing extends HttpServlet {
 	}
 	private String OperationName(String name) {
 		String re="";
-		// 출발지, 목적지, 시간을 사용해서 열차를 조회해주는 오퍼레이션
 		if(name.equals("getTrain"))
 			re+="/getStrtpntAlocFndTrainInfo";
 		else if(name.equals("getCityCode"))
@@ -42,13 +41,13 @@ public class AIOParsing extends HttpServlet {
 			re+="/getCtyAcctoTrainSttnList";
 		return re;
 	}
+	//----------------------------------------------------임시------------------------------------
 	public ArrayList<AddrInfoDTO> ParseAddrInfo(String query, HttpServletRequest request){
 		ArrayList<AddrInfoDTO> ADTOarray = new ArrayList<AddrInfoDTO>();
 		
 		return ADTOarray;
 	}
-	
-	//----------------------------------------------------역에 따른 열차 정보------------------------------------
+	//----------------------------------------------------역에 따른 열차 정보를 TrainArray에 저장------------------------------------
 	public ArrayList<TrainInfoDTO> ParseTrainInfo(String query, HttpServletRequest request) {
 		ArrayList<TrainInfoDTO> TDTOarray = new ArrayList<TrainInfoDTO>();
 		
@@ -90,8 +89,10 @@ public class AIOParsing extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return TDTOarray;
 	}
+	//----------------------------------------------------url의 XML 정보를 name[]태그로 분류해서 노드를 리턴함------------------------------------
 	public NodeList[] XMLParse(String url,String[] name){
 		NodeList[] nodes = new NodeList[name.length];
 		try {
@@ -107,6 +108,7 @@ public class AIOParsing extends HttpServlet {
 		}
 		return nodes;
 	}
+	//----------------------------------------------------공공데이터 포털의 역 정보 데이터를 배열로 바꿔주는 함수------------------------------------
 	public ArrayList<StationInfoDTO> ParseStationInfo(String query, HttpServletRequest request){
 		System.out.println("PAR IN");
 		
@@ -151,11 +153,4 @@ public class AIOParsing extends HttpServlet {
 		}
 		return SDTOArray;
 	}
-	
-	/*
-	public ArrayList<StationDTO> PraseStationInfo(String query, HttpServletRequest request){
-		s
-	}
-	*/
-	
 }

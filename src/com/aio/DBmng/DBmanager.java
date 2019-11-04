@@ -19,10 +19,12 @@ public class DBmanager extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-		System.out.println("get"+request.getParameter("a"));
-		
+		doAct(request,response);
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doAct(request,response);
+	}
+	public void doAct(HttpServletRequest request, HttpServletResponse response) {
 		Connection con;
 		Statement stmt;
 		ResultSet rSet = null;
@@ -31,6 +33,7 @@ public class DBmanager extends HttpServlet {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl","system","1511");
 			stmt=con.createStatement();
+			/*
 			//String query=request.getParameter("a");
 			//if(query.equals("111")) {
 				System.out.println("in");
@@ -48,24 +51,13 @@ public class DBmanager extends HttpServlet {
 					System.out.println("insert into station values('"+arr.get(i).getStationName()+"','"+arr.get(i).getStationCode()+"','0','0')");
 					stmt.executeQuery("insert into station values('"+arr.get(i).getStationName()+"','"+arr.get(i).getStationCode()+"','0','0')");
 				}
-				
-				
-				
+				*/
 			} catch (Exception e) {
-			System.out.println("¾¾¹ß·Ã¾Æ");
+			System.out.println("");
 			e.printStackTrace();
 		}
-		
+	}
+	public void connectDB() {
 		
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//doGet(request, response);
-		System.out.println("post"+request.getAttribute("a"));
-	}
-
 }
