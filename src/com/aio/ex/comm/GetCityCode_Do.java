@@ -26,7 +26,7 @@ public class GetCityCode_Do implements TCommand {
         	stationName=request.getParameter("stationName");
         	depPlaceName=request.getParameter("depPlaceName");
         	arrPlaceName=request.getParameter("arrPlaceName");
-        	stationName=stationName.substring(0,stationName.length()-1);
+        	//stationName=stationName.substring(0,stationName.length()-1);
         	depPlaceName=depPlaceName.substring(0,depPlaceName.length()-1);
         	arrPlaceName=arrPlaceName.substring(0,arrPlaceName.length()-1);
         	//System.out.println("st name = "+stationName);

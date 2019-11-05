@@ -2,6 +2,8 @@
 	pageEncoding="EUC-KR"%>
 <%@ page import="org.json.simple.JSONObject"%>
 <%@ page import="org.json.simple.JSONArray"%>
+<%@ page import ="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date"%>
 <!doctype html>
 <head>
 <meta charset="utf-8">
@@ -43,7 +45,23 @@
 	<div id="map" style="width: 100%; height: 400px;"></div>
 	<input type="text" id="addr">
 	<input type="button" id="button1" onclick="button_click();" value="검색">
+	<form id="frm" method="POST">
+ 			<input type="hidden" name="depPlaceName" />
+ 			<input type="hidden" name="arrPlaceName" />
+
+ 			<input type="hidden" name="depPlaceId" />
+ 			<input type="hidden" name="arrPlaceId" />
+ 		    <input type="hidden" name="depPlandTime" />	    
+ 	</form>
+ 	<%
+ 		Date d = new Date();
+ 		SimpleDateFormat s = new SimpleDateFormat("yyyyMMddhhmmss");
+ 		
+ 		String time=s.format(d);
+ 		//SimpleDateFormat
+ 	%>
 	<script>
+	
 					$("#addr").keyup(function(e){
 						if(e.keyCode==13){
 							$("#button1").click();
@@ -189,28 +207,30 @@
 							dataType:"JSON",
 							asnyc:"false",
 							success:function(data){
-								$("#resultJuso").append(uri);
-								var path=JSON.parse(JSON.stringify(data));
-								var minCount=0;
-								var minmax=0;
-								var min = new Array(0,1,2);
-								for(var ii=0;ii<3;ii++){
-									if(path.result.trainRequest.OBJ[min[ii]].time>path.result.trainRequest.OBJ[min[minmax]].time){
-										minmax=ii;
+								//if(path.result.searchType==1){
+									$("#resultJuso").append(uri);
+									var path=JSON.parse(JSON.stringify(data));
+									$("#resultJuso").append("기차 개수 = "+path.result.trainRequest.OBJ);
+									var minCount=0;
+									var minmax=0;
+									var min = new Array(0,1,2);
+									for(var ii=0;ii<3;ii++){
+										if(path.result.trainRequest.OBJ[min[ii]].time>path.result.trainRequest.OBJ[min[minmax]].time){
+											minmax=ii;
+										}
 									}
-								}
-								for(var i=3;i<path.result.trainRequest.count;i++){
-									if(path.result.trainRequest.OBJ[i].time<path.result.trainRequest.OBJ[min[minmax]].time){
-										min[minmax]=i;
-										for(var ii=0;ii<3;ii++){
-											if(path.result.trainRequest.OBJ[min[ii]].time>path.result.trainRequest.OBJ[min[minmax]].time){
-												minmax=ii;
-											}
-										}	
+									for(var i=3;i<path.result.trainRequest.count;i++){
+										if(path.result.trainRequest.OBJ[i].time<path.result.trainRequest.OBJ[min[minmax]].time){
+											min[minmax]=i;
+											for(var ii=0;ii<3;ii++){
+												if(path.result.trainRequest.OBJ[min[ii]].time>path.result.trainRequest.OBJ[min[minmax]].time){
+													minmax=ii;
+												}
+											}	
+										}		
 									}
-								}
 								shortPath=path.result.trainRequest;
-								
+								//}
 								$("#resultJuso").append("</br></br>최소 시간 기준 광역 3개</br>");
 								for (var i=0;i<3;i++){
 									sx=shortPath.OBJ[min[i]].SX; sy=shortPath.OBJ[min[i]].SY; ex=shortPath.OBJ[min[i]].EX; ey=shortPath.OBJ[min[i]].EY;
@@ -222,7 +242,7 @@
 									times[i]=tempDo();
 									var result = times[i]+shortPath.OBJ[min[i]].time;
 									$("#resultJuso").append("</br> 총 시간 = "+result+"</br></br>");
-									$("#resultJuso").append("<input type=\"button\" value=\"상세보기\" onClick=\"showDetailedPath()\" ></br>");
+									$("#resultJuso").append("<input type=\"button\" value=\"상세보기\" onClick=\"showDetailedPath("+min[i]+")\" ></br>");
 								}
 							}
 						});
@@ -230,18 +250,65 @@
 					}
 					var privious=null;
 					//-------------------------------------------------경로의 전체 노선을 상세히 보여줌---------------
-					function showDetailedPath(){
-						$.ajax({
-							type:"post",
-							url:"",
-							dataType:"JSON",
-							asyns:false,
-							success:function(data){
-								//String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
-								request.getParameter("depPlaceId") ;
-							}
-						});
-						/*
+					function showDetailedPath(i){
+						alert("i = "+i);
+						alert("short paht = "+shortPath.OBJ[i].startSTN);
+						var time=<%= time%>;
+						$("#resultJuso").append("</br>date = "+time);
+			 			//alert("in");
+			 			//goWbs("서울역","용산역");
+			 			$('input[name="depPlaceName"]').val("서울역");
+			 			$('input[name="arrPlaceName"]').val("용산역");
+			 			$('input[name="depPlandTime"]').val(time);
+			 			var str=$("#frm").serialize();
+			 			var uri="http://localhost:805/Tschedule/FrontController/getCityCode.do";
+			 			
+			 			//alert(str);	
+			 			//-------------------------------------------역 이름을 통해 역 코드를 가져옴------------------------
+			 			var trainArrTime,trainDepTime;
+			 			$.ajax({
+			 				type:"post",
+			 				data:str,
+			 				url:uri,
+			 				dataType:"json",
+			 				async:false,
+			 				success:function(data){
+			 					alert("success to city code");
+			 					$("#resultJuso").append("</br>data = "+data.result);
+			 					$("#resultJuso").append("</br>datacode = "+data.depPlaceCode);
+			 					$("#resultJuso").append("</br>datacode = "+data.arrPlaceCode);
+			 					//String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
+			 					$('input[name="depPlaceId"]').val(data.depPlaceCode);
+			 					$('input[name="arrPlaceId"]').val(data.arrPlaceCode);
+			 					
+			 				},
+			 				error:function(e,error){
+			 					alert(e.responseText);
+			 					alert(error);
+			 				}
+			 			});
+			 			alert("1");
+			 			str=$("#frm").serialize();
+			 			//-------------------------------------------역 코드를 통해 기차의 출발, 도착 정보 가져옴------------------------
+			 			$.ajax({
+			 				type:"POST",
+			 				url:"http://localhost:805/Tschedule/FrontController/search.do",
+			 				dataType:"JSON",
+			 				data:str,
+			 				async:false,
+			 				success:function(data){
+			 					alert("! success"+data);
+			 					alert("! success"+JSON.stringify(data));
+			 					alert("! success"+JSON.stringify(data.result[0].arrplacename));
+			 					trainDepTime=data.result[0].depplandtime;
+			 					trainArrTime=data.result[0].arrplandtime;
+			 				},
+			 				error:function(error){
+			 					alert("error " +error.responseText);
+			 				}
+			 			});
+			 			
+			 			alert("2");
 						privious= $("#resultJuso").html();
 						$("#resultJuso").html("");
 						var i=0;
@@ -256,11 +323,12 @@
 							}
 							i++;
 						}
+						alert("3");
 						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType);
 						$("#resultJuso").append("</br>"+trainPath);
+						$("#resultJuso").append("</br>      "+"출발 시간 = "+trainDepTime.substring(8,10)+"시 "+trainDepTime.substring(10,12)+"분  도착시간 = "+trainArrTime.substring(8,10)+"시 "+trainArrTime.substring(10,12)+"분 ");
 						i=0;
 						//기차 출발, 도착 정보 받아오기
-						"FrontController/search.do"
 						//----------------------------------------------------도착역->도착
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
@@ -272,7 +340,7 @@
 							i++;
 						}
 						$("#resultJuso").append("<input type=\"button\" id = \"goBack\" value=\"뒤로가기\"onClick=\"goBack();\" ></br>");
-						*/
+						
 					}
 					function goBack(){
 						$("#resultJuso").html(privious);

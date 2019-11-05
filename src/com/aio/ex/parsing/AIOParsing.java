@@ -56,7 +56,7 @@ public class AIOParsing extends HttpServlet {
 		if (request.getParameter("year") != null) {
 			query += request.getParameter("year") + request.getParameter("month") + request.getParameter("day");
 		} else {
-			query += request.getParameter("depPlandTime");
+			query += request.getParameter("depPlandTime").substring(0,8);
 		}
 		if (request.getParameter("pageNo") == null) {
 			request.setAttribute("pageNo", 1);

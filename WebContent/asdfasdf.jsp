@@ -16,17 +16,18 @@
  	<input type="button" id="target" value="button" />
  	<% 
  		Date d = new Date();
- 		SimpleDateFormat s = new SimpleDateFormat("yyyyMMddhhmm");
+ 		SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");
  		System.out.println("time"+s.format(d));
  		String time=s.format(d);
+ 		SimpleDateFormat ss = new SimpleDateFormat("yyyyMMddhhmmss");
+ 		String time2=ss.format(d);
  	%>
  	<script>
- 	var time="<%=time%>";
- 	
+ 	var time="<%=time2%>";
  	var i =3;	
  	document.getElementById("target").addEventListener("click",function(){temp(3);});
  	function temp(data){
- 		alert(data);
+ 		//alert(data);
  	}
  		$(document).ready(function(){
  			$("#resultJuso").append("</br>date = "+time);
@@ -57,9 +58,19 @@
  					alert(error);
  				}
  			});
+ 			str=$("#frm").serialize();
  			$.ajax({
  				type:"POST",
- 				url:"/FrontController/search.do"
+ 				url:"http://localhost:805/Tschedule/FrontController/search.do",
+ 				dataType:"JSON",
+ 				data:str,
+ 				success:function(data){
+ 					alert("!"+data.result);
+ 					
+ 				},
+ 				error:function(error){
+ 					alert("error " +error.responseText);
+ 				}
  			});
  			
  			
@@ -70,7 +81,7 @@
  			
  			$('input[name="depPlaceName"]').val(x);
  			$('input[name="arrPlaceName"]').val(y);
- 			$('input[name="depPlandTime"]').val(y);
+ 			$('input[name="depPlandTime"]').val(time);
  			$('input[name="stationName"]').val("NAMENAME");
  			}
 
@@ -82,8 +93,7 @@
 
  			    <input type="hidden" name="depPlaceId" />
  			    <input type="hidden" name="arrPlaceId" />
- 			    <input type="hidden" name="depPlandTime" />
- 			    
+ 			    <input type="hidden" name="depPlandTime" />	    
  			</form>
  	<div id = "resultJuso"></div>
   </body>
