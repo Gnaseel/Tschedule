@@ -24,18 +24,30 @@
  	%>
  	<script>
  	var time="<%=time2%>";
- 	var i =3;	
- 	document.getElementById("target").addEventListener("click",function(){temp(3);});
- 	function temp(data){
- 		//alert(data);
- 	}
+ 	var i =3;
+
+ 		$("#target").click(function(){
+ 			var uri="https://accounts.google.com/o/oauth2/v2/auth?"+
+ 					 "scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar&"+
+ 				 	 "access_type=offline&"+
+ 				 	 "include_granted_scopes=true&"+
+ 				 	 "state=state_parameter_passthrough_value&"+
+ 					 "redirect_uri=http://localhost:805/Tschedule/receiveCode.jsp&"+
+ 				 	 "response_type=code&"+
+ 				 	 "client_id=814235019489-jl6sj0r8j6n3v7o9if0m97598c8dkvv4.apps.googleusercontent.com";
+ 			$('#result').html(uri);
+ 			location.href=uri;
+ 		});
  		$(document).ready(function(){
+ 			
+ 			
+ 			
+ 			/*
  			$("#resultJuso").append("</br>date = "+time);
  			//alert("in");
  			goWbs("서울역","용산역");
  			var str=$("#frm").serialize();
  			var uri="http://localhost:805/Tschedule/FrontController/getCityCode.do";
- 			
  			//alert(str);
  			$.ajax({
  				type:"post",
@@ -72,6 +84,7 @@
  					alert("error " +error.responseText);
  				}
  			});
+ 			*/
  			
  			
  		});
@@ -95,7 +108,7 @@
  			    <input type="hidden" name="arrPlaceId" />
  			    <input type="hidden" name="depPlandTime" />	    
  			</form>
- 	<div id = "resultJuso"></div>
+ 	<div id = "result"></div>
   </body>
 </html>
 

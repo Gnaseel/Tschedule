@@ -1,4 +1,4 @@
-package com.aio.ex.command;
+package com.aio.ex.controller;
 
 import java.io.IOException;
 import com.aio.ex.comm.*;
@@ -58,7 +58,12 @@ public class FrontController extends HttpServlet {
 			command= new GetCityCode_Do();
 			command.execute(request, response);
 			viewPage="N";
-		} else {
+		}else if(com.equals("login.do")) {
+			System.out.println("login.do");
+			//command = new Login_Do();
+			command.execute(request, response);
+			viewPage="N";
+		}else {
 			System.out.println("Nothing");
 		}
 		
@@ -66,7 +71,7 @@ public class FrontController extends HttpServlet {
 		//------------------------------------------------------forward-------------------------------------------------------------------------
 		RequestDispatcher disp = request.getRequestDispatcher(viewPage);
 		if(!viewPage.equals("N"))
-		disp.forward(request, response);
+			disp.forward(request, response);
 		
 	}
 }

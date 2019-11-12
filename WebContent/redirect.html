@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form method = "post" action="https://accounts.google.com/o/oauth2/token">
+		<input type="text" name ="code" value="1">
+		<input type="text" name="client_id" value="814235019489-jl6sj0r8j6n3v7o9if0m97598c8dkvv4.apps.googleusercontent.com">
+		<input type="text" name="client_secret" value="jk_DKMZVqEbwlCHj5jfm-zA_">
+		<input type="text" name="redirect_uri" value="http://localhost:805/Tschedule/redirect.html">
+		<input type="submit">
+	</form>
+	<script src = "https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script>
+	function getParameter(name){
+	alert("1");
+	var str = location.search.substring(1).split('&');
+		for(var i=0;i<str.length;i++){
+			var data=str[i].split('=');
+			if(data[0]===name){
+				return data[1];
+			}
+		}
+		return null;
+	}
+	$(document).ready(function(){
+		//alert("code = "+ getParameter('code'));
+		var code=getParameter('code');
+		$("#result").append(code);
+		$('input[name=code]').val(code);
+	
+	var url="https://oauth2.googleapis.com/token?code=" + $('input[name=code]').val()+"&client_id="+ $('input[name=client_id]').val()+
+		"&client_secret="+ $('input[name=client_secret]').val()+"&redirect_uri="+ $('input[name=redirect_uri]').val()+"&grant_type=authorization_code";
+		$('#result').append("</br>url = "+url);
+	});
+		
+		
+	</script>
+	<div id="result"></div>
+</body>
+</html>

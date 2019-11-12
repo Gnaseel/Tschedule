@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<p>aaaaaaaaaaaaaaaaaaaaaa</p>
+<p>access token = <%= request.getAttribute("access_token") %></p>
+ <div> 구글 캘린더에 추가하기</div><input type="button">
 </body>
 </html>

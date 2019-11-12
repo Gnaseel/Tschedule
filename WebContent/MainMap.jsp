@@ -42,6 +42,9 @@
     </style>
 
 <body>
+	<div id="tomain">
+	메인화면으로
+	</div>
 	<div id="map" style="width: 100%; height: 400px;"></div>
 	<input type="text" id="addr">
 	<input type="button" id="button1" onclick="button_click();" value="검색">
@@ -61,7 +64,9 @@
  		//SimpleDateFormat
  	%>
 	<script>
-	
+					$('#tomain').click(function(){
+						window.location("mainWindow.jsp");
+					});
 					$("#addr").keyup(function(e){
 						if(e.keyCode==13){
 							$("#button1").click();
@@ -251,14 +256,12 @@
 					var privious=null;
 					//-------------------------------------------------경로의 전체 노선을 상세히 보여줌---------------
 					function showDetailedPath(i){
-						alert("i = "+i);
-						alert("short paht = "+shortPath.OBJ[i].startSTN);
 						var time=<%= time%>;
 						$("#resultJuso").append("</br>date = "+time);
 			 			//alert("in");
 			 			//goWbs("서울역","용산역");
-			 			$('input[name="depPlaceName"]').val("서울역");
-			 			$('input[name="arrPlaceName"]').val("용산역");
+			 			$('input[name="depPlaceName"]').val(shortPath.OBJ[i].startSTN);
+			 			$('input[name="arrPlaceName"]').val(shortPath.OBJ[i].endSTN);
 			 			$('input[name="depPlandTime"]').val(time);
 			 			var str=$("#frm").serialize();
 			 			var uri="http://localhost:805/Tschedule/FrontController/getCityCode.do";
@@ -280,14 +283,13 @@
 			 					//String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
 			 					$('input[name="depPlaceId"]').val(data.depPlaceCode);
 			 					$('input[name="arrPlaceId"]').val(data.arrPlaceCode);
-			 					
+			 					alert("!!!");
 			 				},
 			 				error:function(e,error){
 			 					alert(e.responseText);
 			 					alert(error);
 			 				}
 			 			});
-			 			alert("1");
 			 			str=$("#frm").serialize();
 			 			//-------------------------------------------역 코드를 통해 기차의 출발, 도착 정보 가져옴------------------------
 			 			$.ajax({
@@ -297,9 +299,9 @@
 			 				data:str,
 			 				async:false,
 			 				success:function(data){
-			 					alert("! success"+data);
-			 					alert("! success"+JSON.stringify(data));
-			 					alert("! success"+JSON.stringify(data.result[0].arrplacename));
+			 					//alert("! success"+data);
+			 					//alert("! success"+JSON.stringify(data));
+			 					//alert("! success"+JSON.stringify(data.result[0].arrplacename));
 			 					trainDepTime=data.result[0].depplandtime;
 			 					trainArrTime=data.result[0].arrplandtime;
 			 				},
@@ -308,7 +310,6 @@
 			 				}
 			 			});
 			 			
-			 			alert("2");
 						privious= $("#resultJuso").html();
 						$("#resultJuso").html("");
 						var i=0;
@@ -323,15 +324,17 @@
 							}
 							i++;
 						}
-						alert("3");
 						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" 소요시간 = "+shortPath.OBJ[min[i]].time+" 열차 종류 = "+shortPath.OBJ[min[i]].trainType);
-						$("#resultJuso").append("</br>"+trainPath);
-						$("#resultJuso").append("</br>      "+"출발 시간 = "+trainDepTime.substring(8,10)+"시 "+trainDepTime.substring(10,12)+"분  도착시간 = "+trainArrTime.substring(8,10)+"시 "+trainArrTime.substring(10,12)+"분 ");
+						alert("1");
+						$("#resultJuso").append("</br> trainPath"+trainPath);
+						alert("2");
+						//$("#resultJuso").append("</br>      "+"출발 시간 = "+trainDepTime.substring(8,10)+"시 "+trainDepTime.substring(10,12)+"분  도착시간 = "+trainArrTime.substring(8,10)+"시 "+trainArrTime.substring(10,12)+"분 ");
+						alert("3");
 						i=0;
 						//기차 출발, 도착 정보 받아오기
 						//----------------------------------------------------도착역->도착
 						while(i<3){
-							//alert("type = "+startObj.subPath[i].trafficType);
+							alert("type = "+endObj.subPath[i].trafficType);
 							if (endObj.subPath[i].trafficType==3){
 								$("#resultJuso").append("</br>"+endObj.subPath[i].distance+"m거리 "+endObj.subPath[i].sectionTime+"분 걷기");
 							}else if(endObj.subPath[i].trafficType==2){
@@ -340,11 +343,16 @@
 							i++;
 						}
 						$("#resultJuso").append("<input type=\"button\" id = \"goBack\" value=\"뒤로가기\"onClick=\"goBack();\" ></br>");
-						
+						$("#resultJuso").append("<input type=\"button\" id = \"savePath\" value=\"이 경로 사용하기\"></br>");
+				
 					}
 					function goBack(){
 						$("#resultJuso").html(privious);
 					}
+					$('#savePath').click(function(){
+						alert("in save path");
+						window.location("DBFrontController/signUp.DBdo");
+					});
 					function tempDo(){
 						var time=0;
 						var i=0;

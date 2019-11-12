@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>메인 로그인 화면</title>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+All in one 길찾기 서비스
+	<div>
+		<form action="DBFrontController/loginAuth.DBdo" method="post">
+			<input type="text" placeholder="id" name="id"><br>
+			<input type="password" name="password">
+			<input type="submit" value="로그인">
+		</form>
+	</div>
+	<div>
+		<input type="button" value="회원가입" id="signUp">
+	</div>
+	<script>
+		$('#signUp').click(function(){
+			window.location="signUp.jsp";
+		});
+	</script>
+</body>
+</html>
