@@ -16,7 +16,7 @@ import com.aio.ex.comm.TCommand;
 
 @WebServlet("/LoginAuth")
 public class LoginAuth_Do implements TCommand {
-
+	//	로그인 화면에서 받은 정보들을 DB와 비교함
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("-----------------------------In LoginAuthDo----------------------------------------");

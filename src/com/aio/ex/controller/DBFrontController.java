@@ -34,6 +34,8 @@ public class DBFrontController extends HttpServlet {
 
 	public void doAction(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html;charset=UTF-8"); 
 		String viewPage = null;
 		TCommand command = null;
 		String uri = request.getRequestURI();
@@ -48,7 +50,7 @@ public class DBFrontController extends HttpServlet {
 			System.out.println("signUp.DBdo");
 			command = new SignUp_Do();
 			command.execute(request, response);
-			viewPage = "/mainWindow.jsp";
+			viewPage = "/Login.html";
 		} else if (com.equals("loginAuth.DBdo")) {
 			System.out.println("loginAuth.DBdo");
 			command = new LoginAuth_Do();
@@ -59,6 +61,12 @@ public class DBFrontController extends HttpServlet {
 			System.out.println("setPath");
 			command = new SetPath_Do();
 			command.execute(request, response);
+			viewPage = "/MainMap.jsp";
+		} else if (com.equals("getPath.DBdo")) {
+			System.out.println("getPath");
+			command = new GetPath_Do();
+			command.execute(request, response);
+			viewPage="/pathLog.jsp";
 		}
 		RequestDispatcher dis = request.getRequestDispatcher(viewPage);
 		if (!viewPage.equals("N"))

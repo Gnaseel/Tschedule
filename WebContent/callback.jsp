@@ -13,9 +13,11 @@
 <script type="text/javascript" src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 <script>
 	$(document).ready(function(){
-		$("#resultJuso").append("<input type=\"button\" id = \"savePath\" value=\"이 경로 사용하기\"></br>");
+		$("#resultJuso").append("<input type=\"button\" name=\"abc\" id = \"abc\" value=\"이 경로 사용하기\"></br>");
 	})
-	$("input[name='button']").on({
+	
+	
+	$(document).on("click","#abc",function(){
 		alert("in save path");
 		//window.location("DBFrontController/signUp.DBdo");
 	});

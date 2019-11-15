@@ -19,6 +19,7 @@
  		SimpleDateFormat s = new SimpleDateFormat("yyyyMMdd");
  		System.out.println("time"+s.format(d));
  		String time=s.format(d);
+ 		
  		SimpleDateFormat ss = new SimpleDateFormat("yyyyMMddhhmmss");
  		String time2=ss.format(d);
  	%>

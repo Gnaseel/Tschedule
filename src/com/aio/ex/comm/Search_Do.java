@@ -20,7 +20,7 @@ public class Search_Do implements TCommand {
 	public void execute(HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("-----------------------------In SearchDo----------------------------------------");
 		System.out.println("dpe time = "+request.getParameter("depPlandTime"));
-		String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
+		String query = "&numOfRows=80&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
 		int depTime=Integer.parseInt(request.getParameter("depPlandTime").substring(8,12));
 		System.out.println(depTime);
 		AIOParsing par=new AIOParsing(); 

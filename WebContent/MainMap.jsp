@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-	pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ page import="org.json.simple.JSONObject"%>
 <%@ page import="org.json.simple.JSONArray"%>
 <%@ page import ="java.text.SimpleDateFormat" %>
@@ -7,54 +7,32 @@
 <!doctype html>
 <head>
 <meta charset="utf-8">
-<title>³×ÀÌ¹ö map ¿ÀÇÂapi»ç¿ë</title>
+<title>ë„¤ì´ë²„ map ì˜¤í”ˆapiì‚¬ìš©</title>
 </head>
 <script
 	src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=87yk72x38d"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script type="text/javascript"
 	src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=87yk72x38d&submodules=geocoder"></script>
-    <style>
-      .table {
-      	border:1px solid;
-        display: table;
-        width: 100%;
-      }
-      .table-row {
-      border:1px solid;
-        display: table-row;
-      }
-      .table-cell {
-     	border:1px solid;
-        display: table-cell;
-        padding: 0px 20px;
-        height: 50px;
-      }
-      .top {
-        vertical-align: top;
-      }
-      .middle {
-        vertical-align: middle;
-      }
-      .bottom {
-        vertical-align: bottom;
-      }
-    </style>
 
 <body>
 	<div id="tomain">
-	¸ŞÀÎÈ­¸éÀ¸·Î
+	ë©”ì¸í™”ë©´ìœ¼ë¡œ
 	</div>
 	<div id="map" style="width: 100%; height: 400px;"></div>
 	<input type="text" id="addr">
-	<input type="button" id="button1" onclick="button_click();" value="°Ë»ö">
+	<input type="button" id="button1" onclick="button_click();" value="ê²€ìƒ‰">
 	<form id="frm" method="POST">
- 			<input type="hidden" name="depPlaceName" />
- 			<input type="hidden" name="arrPlaceName" />
-
- 			<input type="hidden" name="depPlaceId" />
- 			<input type="hidden" name="arrPlaceId" />
- 		    <input type="hidden" name="depPlandTime" />	    
+ 			<input type="hidden" name="depPlaceName">
+ 			<input type="hidden" name="arrPlaceName">
+ 			<input type="hidden" name="depPlaceId">
+ 			<input type="hidden" name="arrPlaceId">
+ 		    <input type="hidden" name="depPlandTime">	    
+ 	</form>
+ 	<form action ="http://localhost:805/Tschedule/DBFrontController/setPath.DBdo" id="path" method="POST" accept-charset="UTF-8">
+ 			<input type="hidden" name="startPath">
+ 			<input type="hidden" name="middlePath">
+ 			<input type="hidden" name="endPath">	    
  	</form>
  	<%
  		Date d = new Date();
@@ -65,7 +43,7 @@
  	%>
 	<script>
 					$('#tomain').click(function(){
-						window.location("mainWindow.jsp");
+						window.location("http://localhost:805/Tschedule/mainWindow.jsp");
 					});
 					$("#addr").keyup(function(e){
 						if(e.keyCode==13){
@@ -83,8 +61,9 @@
 					var p=null;
 					var AddrDep=null;
 					var AddrArv=null;
+					var tempTrain=null;
 					var laln= new naver.maps.LatLng(0,0);
-					//---------------------------------------AJAX»ç¿ëÇØ¼­ °Ë»ö¾î¿¡ ´ëÇÑ ÁÖ¼ÒµéÀ» ¹İÈ¯ÇØÁÜ--------------------------------
+					//---------------------------------------AJAXì‚¬ìš©í•´ì„œ ê²€ìƒ‰ì–´ì— ëŒ€í•œ ì£¼ì†Œë“¤ì„ ë°˜í™˜í•´ì¤Œ--------------------------------
 					function button_click(){
 						var uri="http://www.juso.go.kr/addrlink/addrLinkApi.do?currentPage=1&countPerPage=10&keyword=";
 						uri+=encodeURI(document.getElementById('addr').value);
@@ -92,34 +71,34 @@
 						     $.ajax({
 						           type:"post",
 						           url: uri,
-						           dataType:"JSON", // ¿É¼ÇÀÌ¹Ç·Î JSONÀ¸·Î ¹ŞÀ»°Ô ¾Æ´Ï¸é ¾È½áµµ µÊ
+						           dataType:"JSON", // ì˜µì…˜ì´ë¯€ë¡œ JSONìœ¼ë¡œ ë°›ì„ê²Œ ì•„ë‹ˆë©´ ì•ˆì¨ë„ ë¨
 						           data:$("#form").serialize() ,
 						           success : function(data) {
 						        	   var d = JSON.stringify(data);
 						        	   $('#resultJuso').html("");
 						        	   p = JSON.parse(d);
-						        	   //-------------------------------------------°á°ú Ãâ·Â--------------------------------
+						        	   //-------------------------------------------ê²°ê³¼ ì¶œë ¥--------------------------------
 						        	   for(var i=0;i<p.results.common.totalCount;i++){
 						        		   $('#resultJuso').append("<div id=\"result"+i+"\">");
-						        		   $('#resultJuso').append("</br> ÁÖ¼Ò</br>");
+						        		   $('#resultJuso').append("</br> ì£¼ì†Œ</br>");
 						        	   		if(p.results.juso[i].bdNm!=null)
 						        	   			$('#resultJuso').append(p.results.juso[i].bdNm+"</br>");
 						        	   		$('#resultJuso').append(p.results.juso[i].roadAddr);
-						        	   		$('#resultJuso').append("<input type=\"button\" value=\"¼±ÅÃ\" onclick=\"SelectAddr("+i+");\"></div>");
+						        	   		$('#resultJuso').append("<input type=\"button\" value=\"ì„ íƒ\" onclick=\"SelectAddr("+i+");\"></div>");
 						        	   }
 						           },
 						           
 						           complete : function(data) {
-						                 // Åë½ÅÀÌ ½ÇÆĞÇß¾îµµ ¿Ï·á°¡ µÇ¾úÀ» ¶§ ÀÌ ÇÔ¼ö¸¦ Å¸°Ô µÈ´Ù.
+						                 // í†µì‹ ì´ ì‹¤íŒ¨í–ˆì–´ë„ ì™„ë£Œê°€ ë˜ì—ˆì„ ë•Œ ì´ í•¨ìˆ˜ë¥¼ íƒ€ê²Œ ëœë‹¤.
 						                 // TODO
 						           },
 						           error : function(xhr, status, error) {
-						                 alert("¿¡·¯¹ß»ı");
+						                 alert("ì—ëŸ¬ë°œìƒ");
 						           }
 						     });
 					
 					}
-					//--------------------------------¿øÇÏ´Â ÁÖ¼Ò¸¦ ¼±ÅÃÇßÀ» ¶§ »ó¼¼ ÁÖ¼Ò¸¦ Ãâ·ÂÇÏ°í ¸ñÀûÁö,Ãâ¹ßÁö·Î ¼±ÅÃÇÒ°ÇÁö ÀÔ·Â¹ŞÀ½---------------
+					//--------------------------------ì›í•˜ëŠ” ì£¼ì†Œë¥¼ ì„ íƒí–ˆì„ ë•Œ ìƒì„¸ ì£¼ì†Œë¥¼ ì¶œë ¥í•˜ê³  ëª©ì ì§€,ì¶œë°œì§€ë¡œ ì„ íƒí• ê±´ì§€ ì…ë ¥ë°›ìŒ---------------
 					function SelectAddr(i){
 						var uri="http://www.juso.go.kr/addrlink/addrCoordApi.do?";
 						uri+="admCd="+p.results.juso[i].admCd;
@@ -145,19 +124,19 @@
 							
 							
 							$('#resultJuso').append("<div id=\"COORDresult"+i+"\">");
-			        		$('#resultJuso').append("</br> ÁÖ¼Ò</br>");
+			        		$('#resultJuso').append("</br> ì£¼ì†Œ</br>");
 			        	   	if(dp.results.juso[0].bdNm!=null)
-			        	   		$('#resultJuso').append("ºôµù ÀÌ¸§ = "+dp.results.juso[0].bdNm+"</br>");
-			        	   	$('#resultJuso').append("À§µµ = "+dp.results.juso[0].entY+"   ");
-			        	   	$('#resultJuso').append("XÁÂÇ¥ = "+dp.results.juso[0].entX+" \(ÀÌ ÁÂÇ¥°ªÀº À§µµ°æµµ°ªÀÌ ¾Æ´Ñ UTMÅõ¿µ ÁÂÇ¥ÀÓ\)</br>");
+			        	   		$('#resultJuso').append("ë¹Œë”© ì´ë¦„ = "+dp.results.juso[0].bdNm+"</br>");
+			        	   	$('#resultJuso').append("ìœ„ë„ = "+dp.results.juso[0].entY+"   ");
+			        	   	$('#resultJuso').append("Xì¢Œí‘œ = "+dp.results.juso[0].entX+" \(ì´ ì¢Œí‘œê°’ì€ ìœ„ë„ê²½ë„ê°’ì´ ì•„ë‹Œ UTMíˆ¬ì˜ ì¢Œí‘œì„\)</br>");
 			        	   	$('#resultJuso').append(p.results.juso[0].roadAddr+"</br>");
 			        	   	//$('#resultJuso').append(uri+"</br>");
-			        	   	$('#resultJuso').append("<input type=\"button\" value=\"Ãâ¹ßÁö ¼³Á¤\" onclick=\"setPath("+i+",\'depa\');\">");
-			        	   	$('#resultJuso').append("<input type=\"button\" value=\"µµÂøÁö ¼³Á¤\" onclick=\"setPath("+i+",\'arri\');\"></div>");
+			        	   	$('#resultJuso').append("<input type=\"button\" value=\"ì¶œë°œì§€ ì„¤ì •\" onclick=\"setPath("+i+",\'depa\');\">");
+			        	   	$('#resultJuso').append("<input type=\"button\" value=\"ë„ì°©ì§€ ì„¤ì •\" onclick=\"setPath("+i+",\'arri\');\"></div>");
 			        	   	myCOORD.add(dp.results.juso[0].entX,dp.results.juso[0].entY);
 							}
 						});
-						//alert("À§Ä¡ = "+myCOORD.toString());
+						//alert("ìœ„ì¹˜ = "+myCOORD.toString());
 						
 						laln=naver.maps.UTMKCoord.fromCoordToLatLng(myCOORD);
 						map.updateBy(laln,9);
@@ -169,17 +148,17 @@
 						});
 						
 					}
-					//--------------------------------------------------------°æ·Î ¼³Á¤-----------------------
+					//--------------------------------------------------------ê²½ë¡œ ì„¤ì •-----------------------
 					function setPath(i,desti){
 						if(desti=="depa"){
 							$('#resultJuso').html("");
-							$('#depaAddr').html("Ãâ¹ßÁö = "+p.results.juso[i].roadAddr);
+							$('#depaAddr').html("ì¶œë°œì§€ = "+p.results.juso[i].roadAddr);
 							AddrDep=p.results.juso[i];
 							AddrDep.entX=laln.x;
 							AddrDep.entY=laln.y;
 						}else if(desti=="arri"){
 							$('#resultJuso').html("");
-							$('#arriAddr').html("¸ñÀûÁö = "+p.results.juso[i].roadAddr);
+							$('#arriAddr').html("ëª©ì ì§€ = "+p.results.juso[i].roadAddr);
 							AddrArv=p.results.juso[i];
 							AddrArv.entX=laln.x;
 							AddrArv.entY=laln.y;
@@ -187,13 +166,13 @@
 						if(AddrDep!=null&&AddrArv!=null){
 							$('#depaAddr').html("");
 							$('#depaAddr').html("");
-							$('#resultJuso').html("Ãâ¹ßÁö = "+AddrDep.roadAddr   + '</br>µµÂøÁö =  '+AddrArv.roadAddr+"<input type=\"button\" value=\"°æ·Î Ã£±â\" onclick=\"searchPath();\">");
+							$('#resultJuso').html("ì¶œë°œì§€ = "+AddrDep.roadAddr   + '</br>ë„ì°©ì§€ =  '+AddrArv.roadAddr+"<input type=\"button\" value=\"ê²½ë¡œ ì°¾ê¸°\" onclick=\"searchPath();\">");
 							
 						}
 						
 					}
-					//--------------------------------------------------------------------°æ·Î Å½»ö--------------------------
-					//------------------------±¤¿ª °æ·Î
+					//--------------------------------------------------------------------ê²½ë¡œ íƒìƒ‰--------------------------
+					//------------------------ê´‘ì—­ ê²½ë¡œ
 					var sx,sy,ex,ey;
 					var shortPath;
 					var trainPath;
@@ -201,8 +180,8 @@
 					function searchPath(){
 						$('#depaAddr').html("");
 						$('#arriAddr').html("");
-						$('#resultJuso').html("Ãâ¹ß ÁÂÇ¥ = "+AddrDep.entX+"  "+AddrDep.entY);
-						$('#resultJuso').append("</br>µµÂø ÁÂÇ¥ = "+AddrArv.entX+"  "+AddrArv.entY);
+						$('#resultJuso').html("ì¶œë°œ ì¢Œí‘œ = "+AddrDep.entX+"  "+AddrDep.entY);
+						$('#resultJuso').append("</br>ë„ì°© ì¢Œí‘œ = "+AddrArv.entX+"  "+AddrArv.entY);
 						
 						var uri="https://api.odsay.com/v1/api/searchPubTransPath?&SX="+AddrDep.entX+"&SY="+AddrDep.entY+"&EX="+AddrArv.entX+"&EY="+AddrArv.entY+"&apiKey=vKj%2FKXP67Uh63gVLXld7CXB%2BFTqXtEuP20r5gpBwPw0";
 						
@@ -215,7 +194,7 @@
 								//if(path.result.searchType==1){
 									$("#resultJuso").append(uri);
 									var path=JSON.parse(JSON.stringify(data));
-									$("#resultJuso").append("±âÂ÷ °³¼ö = "+path.result.trainRequest.OBJ);
+									$("#resultJuso").append("ê¸°ì°¨ ê°œìˆ˜ = "+path.result.trainRequest.OBJ);
 									var minCount=0;
 									var minmax=0;
 									var min = new Array(0,1,2);
@@ -236,30 +215,35 @@
 									}
 								shortPath=path.result.trainRequest;
 								//}
-								$("#resultJuso").append("</br></br>ÃÖ¼Ò ½Ã°£ ±âÁØ ±¤¿ª 3°³</br>");
+								$("#resultJuso").append("</br></br>ìµœì†Œ ì‹œê°„ ê¸°ì¤€ ê´‘ì—­ 3ê°œ</br>");
 								for (var i=0;i<3;i++){
 									sx=shortPath.OBJ[min[i]].SX; sy=shortPath.OBJ[min[i]].SY; ex=shortPath.OBJ[min[i]].EX; ey=shortPath.OBJ[min[i]].EY;
 									times[i]=0;
-									$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ¼Ò¿ä½Ã°£ = "+shortPath.OBJ[min[i]].time+" ¿­Â÷ Á¾·ù = "+shortPath.OBJ[min[i]].trainType);
-									trainPath=shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ¿­Â÷ Á¾·ù = "+shortPath.OBJ[min[i]].trainType;
+									$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ì†Œìš”ì‹œê°„ = "+shortPath.OBJ[min[i]].time+" ì—´ì°¨ ì¢…ë¥˜ = "+shortPath.OBJ[min[i]].trainType);
+									tempTrain=shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ì—´ì°¨ ì¢…ë¥˜ = "+shortPath.OBJ[min[i]].trainType;
+									trainPath='{"trafficType":1, "totalTime":'+shortPath.OBJ[min[i]].time+
+											  ',"firstStartStation":"'+shortPath.OBJ[min[i]].startSTN+
+											  '", "lastEndStation":"'+shortPath.OBJ[min[i]].endSTN+
+											  '", "startTime":';
 									seartStartPath();
 									seartEndPath();
 									times[i]=tempDo();
 									var result = times[i]+shortPath.OBJ[min[i]].time;
-									$("#resultJuso").append("</br> ÃÑ ½Ã°£ = "+result+"</br></br>");
-									$("#resultJuso").append("<input type=\"button\" value=\"»ó¼¼º¸±â\" onClick=\"showDetailedPath("+min[i]+")\" ></br>");
+									$("#resultJuso").append("</br> ì´ ì‹œê°„ = "+result+"</br></br>");
+									$("#resultJuso").append("<input type=\"button\" value=\"ìƒì„¸ë³´ê¸°\" onClick=\"showDetailedPath("+min[i]+")\" ></br>");
 								}
 							}
 						});
 						
 					}
+					
 					var privious=null;
-					//-------------------------------------------------°æ·ÎÀÇ ÀüÃ¼ ³ë¼±À» »ó¼¼È÷ º¸¿©ÁÜ---------------
+					//-------------------------------------------------ê²½ë¡œì˜ ì „ì²´ ë…¸ì„ ì„ ìƒì„¸íˆ ë³´ì—¬ì¤Œ---------------
 					function showDetailedPath(i){
 						var time=<%= time%>;
 						$("#resultJuso").append("</br>date = "+time);
 			 			//alert("in");
-			 			//goWbs("¼­¿ï¿ª","¿ë»ê¿ª");
+			 			//goWbs("ì„œìš¸ì—­","ìš©ì‚°ì—­");
 			 			$('input[name="depPlaceName"]').val(shortPath.OBJ[i].startSTN);
 			 			$('input[name="arrPlaceName"]').val(shortPath.OBJ[i].endSTN);
 			 			$('input[name="depPlandTime"]').val(time);
@@ -267,7 +251,7 @@
 			 			var uri="http://localhost:805/Tschedule/FrontController/getCityCode.do";
 			 			
 			 			//alert(str);	
-			 			//-------------------------------------------¿ª ÀÌ¸§À» ÅëÇØ ¿ª ÄÚµå¸¦ °¡Á®¿È------------------------
+			 			//-------------------------------------------ì—­ ì´ë¦„ì„ í†µí•´ ì—­ ì½”ë“œë¥¼ ê°€ì ¸ì˜´------------------------
 			 			var trainArrTime,trainDepTime;
 			 			$.ajax({
 			 				type:"post",
@@ -283,7 +267,6 @@
 			 					//String query = "&depPlaceId=" + request.getParameter("depPlaceId") + "&arrPlaceId="+ request.getParameter("arrPlaceId") + "&depPlandTime=";
 			 					$('input[name="depPlaceId"]').val(data.depPlaceCode);
 			 					$('input[name="arrPlaceId"]').val(data.arrPlaceCode);
-			 					alert("!!!");
 			 				},
 			 				error:function(e,error){
 			 					alert(e.responseText);
@@ -291,7 +274,7 @@
 			 				}
 			 			});
 			 			str=$("#frm").serialize();
-			 			//-------------------------------------------¿ª ÄÚµå¸¦ ÅëÇØ ±âÂ÷ÀÇ Ãâ¹ß, µµÂø Á¤º¸ °¡Á®¿È------------------------
+			 			//-------------------------------------------ì—­ ì½”ë“œë¥¼ í†µí•´ ê¸°ì°¨ì˜ ì¶œë°œ, ë„ì°© ì •ë³´ ê°€ì ¸ì˜´------------------------
 			 			$.ajax({
 			 				type:"POST",
 			 				url:"http://localhost:805/Tschedule/FrontController/search.do",
@@ -301,7 +284,7 @@
 			 				success:function(data){
 			 					//alert("! success"+data);
 			 					//alert("! success"+JSON.stringify(data));
-			 					//alert("! success"+JSON.stringify(data.result[0].arrplacename));
+			 					alert("! success ì´ê²Œ ì‹œê°„ì„"+JSON.stringify(data.result[0]));
 			 					trainDepTime=data.result[0].depplandtime;
 			 					trainArrTime=data.result[0].arrplandtime;
 			 				},
@@ -313,50 +296,62 @@
 						privious= $("#resultJuso").html();
 						$("#resultJuso").html("");
 						var i=0;
-						//----------------------------------------------------½ÃÀÛ¿ª->½ÃÀÛ
+						//----------------------------------------------------ì‹œì‘ì—­->ì‹œì‘
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
+							//------------------------ë„ë³´ì¼ ê²½ìš°-----------------------------
 							if (startObj.subPath[i].trafficType==3){
-								$("#resultJuso").append("</br>"+startObj.subPath[i].distance+"m°Å¸® "+startObj.subPath[i].sectionTime+"ºĞ °È±â");
-								
+								$("#resultJuso").append("</br>"+startObj.subPath[i].distance+"mê±°ë¦¬ "+startObj.subPath[i].sectionTime+"ë¶„ ê±·ê¸°");
+							
+							//----------------------------------------ë²„ìŠ¤ì¼ ê²½ìš°----------------
 							}else if(startObj.subPath[i].trafficType==2){
-								$("#resultJuso").append("</br>"+startObj.subPath[i].startName+"ºÎÅÍ "+startObj.subPath[i].endName+"±îÁö"+startObj.subPath[i].lane[0].busNo+"¹ø ¹ö½º ÀÌµ¿ <input type=\"button\" value = \"³ë¼±º¸±â\">");
+								$("#resultJuso").append("</br>"+startObj.subPath[i].startName+"ë¶€í„° "+startObj.subPath[i].endName+"ê¹Œì§€"+startObj.subPath[i].lane[0].busNo+"ë²ˆ ë²„ìŠ¤ ì´ë™ <input type=\"button\" value = \"ë…¸ì„ ë³´ê¸°\">");
 							}
 							i++;
 						}
-						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ¼Ò¿ä½Ã°£ = "+shortPath.OBJ[min[i]].time+" ¿­Â÷ Á¾·ù = "+shortPath.OBJ[min[i]].trainType);
-						alert("1");
-						$("#resultJuso").append("</br> trainPath"+trainPath);
+						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ì†Œìš”ì‹œê°„ = "+shortPath.OBJ[min[i]].time+" ì—´ì°¨ ì¢…ë¥˜ = "+shortPath.OBJ[min[i]].trainType);
+						alert(trainPath);
+						alert(trainDepTime);
+						trainPath+= trainDepTime.substring(0,12)+"}";
 						alert("2");
-						//$("#resultJuso").append("</br>      "+"Ãâ¹ß ½Ã°£ = "+trainDepTime.substring(8,10)+"½Ã "+trainDepTime.substring(10,12)+"ºĞ  µµÂø½Ã°£ = "+trainArrTime.substring(8,10)+"½Ã "+trainArrTime.substring(10,12)+"ºĞ ");
+						$("#resultJuso").append("</br>"+tempTrain);
 						alert("3");
+						//alert("	time = "+trainDepTime.substring(10,12)+" ë„ì°© = "+trainArrTime.substring(8,10));
+						$("#resultJuso").append("</br>      .   "+"ì¶œë°œ ì‹œê°„ = "+trainDepTime.substring(8,10)+"ì‹œ "+trainDepTime.substring(10,12)+"ë¶„  ë„ì°©ì‹œê°„ = "+trainArrTime.substring(8,10)+"ì‹œ "+trainArrTime.substring(10,12)+"ë¶„ ");
+
 						i=0;
-						//±âÂ÷ Ãâ¹ß, µµÂø Á¤º¸ ¹Ş¾Æ¿À±â
-						//----------------------------------------------------µµÂø¿ª->µµÂø
+						//ê¸°ì°¨ ì¶œë°œ, ë„ì°© ì •ë³´ ë°›ì•„ì˜¤ê¸°
+						//----------------------------------------------------ë„ì°©ì—­->ë„ì°©
 						while(i<3){
 							alert("type = "+endObj.subPath[i].trafficType);
 							if (endObj.subPath[i].trafficType==3){
-								$("#resultJuso").append("</br>"+endObj.subPath[i].distance+"m°Å¸® "+endObj.subPath[i].sectionTime+"ºĞ °È±â");
+								$("#resultJuso").append("</br>"+endObj.subPath[i].distance+"mê±°ë¦¬ "+endObj.subPath[i].sectionTime+"ë¶„ ê±·ê¸°");
 							}else if(endObj.subPath[i].trafficType==2){
-								$("#resultJuso").append("</br>"+endObj.subPath[i].startName+"ºÎÅÍ "+endObj.subPath[i].endName+"±îÁö"+endObj.subPath[i].lane[0].busNo+"¹ø ¹ö½º ÀÌµ¿ <input type=\"button\" value = \"³ë¼±º¸±â\">");
+								$("#resultJuso").append("</br>"+endObj.subPath[i].startName+"ë¶€í„° "+endObj.subPath[i].endName+"ê¹Œì§€"+endObj.subPath[i].lane[0].busNo+"ë²ˆ ë²„ìŠ¤ ì´ë™ <input type=\"button\" value = \"ë…¸ì„ ë³´ê¸°\">");
 							}
 							i++;
 						}
-						$("#resultJuso").append("<input type=\"button\" id = \"goBack\" value=\"µÚ·Î°¡±â\"onClick=\"goBack();\" ></br>");
-						$("#resultJuso").append("<input type=\"button\" id = \"savePath\" value=\"ÀÌ °æ·Î »ç¿ëÇÏ±â\"></br>");
+						$("#resultJuso").append("<input type=\"button\" id = \"goBack\" value=\"ë’¤ë¡œê°€ê¸°\"onClick=\"goBack();\" ></br>");
+						$("#resultJuso").append("<input type=\"button\" id = \"savePath\" value=\"ì´ ê²½ë¡œ ì‚¬ìš©í•˜ê¸°\"></br>");
 				
 					}
 					function goBack(){
 						$("#resultJuso").html(privious);
 					}
-					$('#savePath').click(function(){
+					$(document).on("click","#savePath",function(){
 						alert("in save path");
-						window.location("DBFrontController/signUp.DBdo");
+						$('input[name="startPath"]').val(JSON.stringify(startObj));
+						$('input[name="middlePath"]').val(trainPath);
+						$('input[name="endPath"]').val(JSON.stringify(endObj));
+						//$('#resultJuso').html("");
+						//$('#resultJuso').append("ì‹œì‘ = "+$('input[name="startPath"]').val());
+						$("#path").submit();
+						//var str=$("#path").serialize();
 					});
 					function tempDo(){
 						var time=0;
 						var i=0;
-						//----------------------------------------------------½ÃÀÛ¿ª->½ÃÀÛ
+						//----------------------------------------------------ì‹œì‘ì—­->ì‹œì‘
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
 							if (startObj.subPath[i].trafficType==3){
@@ -368,9 +363,9 @@
 							}
 							i++;
 						}
-						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ¼Ò¿ä½Ã°£ = "+shortPath.OBJ[min[i]].time+" ¿­Â÷ Á¾·ù = "+shortPath.OBJ[min[i]].trainType);
+						//$("#resultJuso").append(shortPath.OBJ[min[i]].startSTN+" -> "+shortPath.OBJ[min[i]].endSTN+" ì†Œìš”ì‹œê°„ = "+shortPath.OBJ[min[i]].time+" ì—´ì°¨ ì¢…ë¥˜ = "+shortPath.OBJ[min[i]].trainType);
 						i=0;
-						//----------------------------------------------------µµÂø¿ª->µµÂø
+						//----------------------------------------------------ë„ì°©ì—­->ë„ì°©
 						while(i<3){
 							//alert("type = "+startObj.subPath[i].trafficType);
 							if (endObj.subPath[i].trafficType==3){
@@ -380,16 +375,16 @@
 							}
 							i++;
 						}
-						//$("#resultJuso").append("</br> <input type=\"button\" value = \"³ë¼±¼±ÅÃ\" onClick=\"location.href='FrontController/search.do?depPlaceId=\"++\"'\")>");
+						//$("#resultJuso").append("</br> <input type=\"button\" value = \"ë…¸ì„ ì„ íƒ\" onClick=\"location.href='FrontController/search.do?depPlaceId=\"++\"'\")>");
 						return time;
 					}
 					function selectPath(){}
 					var startObj=null;
 					var endObj=null;
 					function seartStartPath(){
-							//------------------------½ÃÀÛ->½ÃÀÛ¿ª °æ·Î
+							//------------------------ì‹œì‘->ì‹œì‘ì—­ ê²½ë¡œ
 						var uri="https://api.odsay.com/v1/api/searchPubTransPath?&SX=" +AddrDep.entX+"&SY="+AddrDep.entY+"&EX="+sx+"&EY="+sy+"&apiKey=vKj%2FKXP67Uh63gVLXld7CXB%2BFTqXtEuP20r5gpBwPw0";
-						$("#resultJuso").append("</br> ½ÃÀÛ uri  = "+uri);
+						$("#resultJuso").append("</br> ì‹œì‘ uri  = "+uri);
 						$.ajax({
 							type:"post",
 							dataType:"JSON",
@@ -401,9 +396,9 @@
 								var pt = paths.result;
 								var min=9000;
 								var minIdx=0;
-								//alert("µÊ?"+pt.path[0].info.totalTime);
+								//alert("ë¨?"+pt.path[0].info.totalTime);
 								for(var i=0;i<paths.result.busCount;i++){
-									//alert("µÊµÊ? min = "+min+" path i = "+pt.path[i].info.totalTime);
+									//alert("ë¨ë¨? min = "+min+" path i = "+pt.path[i].info.totalTime);
 									if(pt.path[i].info.totalTime<min) {
 										min=pt.path[i].info.totalTime;
 										minIdx=i;
@@ -415,9 +410,9 @@
 						});
 					}
 					function seartEndPath(){
-						//------------------------µµÂø¿ª->µµÂø °æ·Î
+						//------------------------ë„ì°©ì—­->ë„ì°© ê²½ë¡œ
 						var uri="https://api.odsay.com/v1/api/searchPubTransPath?&SX=" +ex+ "&SY="+ey+"&EX="+AddrArv.entX+"&EY="+AddrArv.entY+"&apiKey=vKj%2FKXP67Uh63gVLXld7CXB%2BFTqXtEuP20r5gpBwPw0";
-						$("#resultJuso").append("</br> µµÂø uri  = "+uri);
+						$("#resultJuso").append("</br> ë„ì°© uri  = "+uri);
 						$.ajax({
 							type:"post",
 							dataType:"JSON",
@@ -430,9 +425,9 @@
 								var min=9000;
 								
 								var minIdx=0;
-								//alert("µÊ?"+pt.path[0].info.totalTime);
+								//alert("ë¨?"+pt.path[0].info.totalTime);
 								for(var i=0;i<paths.result.busCount;i++){
-									//alert("µÊµÊ? min = "+min+" path i = "+pt.path[i].info.totalTime);
+									//alert("ë¨ë¨? min = "+min+" path i = "+pt.path[i].info.totalTime);
 									if(pt.path[i].info.totalTime<min) {
 										min=pt.path[i].info.totalTime;
 										minIdx=i;

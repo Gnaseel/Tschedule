@@ -22,11 +22,13 @@
 	</div>
 	<script>
 		$('#findPath').click(function(){
-			window.location("MainMap.jsp");
+			window.location("/Tschedule/MainMap.jsp");
 		});
 		$('#calender').click(function(){
+		window.location("http://localhost:805/Tschedule/asdfasdf.jsp");
 		});
 		$('#myPage').click(function(){
+		window.location("http://localhost:805/Tschedule/DBFrontController/getPath.DBdo");
 		});
 	</script>
 </body>

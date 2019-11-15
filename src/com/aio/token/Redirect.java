@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.sql.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,6 +16,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.google.gson.Gson;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -35,14 +38,32 @@ public class Redirect extends HttpServlet {
 		query += "&redirect_uri=" + "http://localhost:805/Tschedule/receiveCode.jsp";
 		query += "&grant_type=authorization_code";
 		String tokenJson = getHttpConnection("https://accounts.google.com/o/oauth2/token", query);
-		System.out.println("토큰 시작 "+tokenJson.toString());
+		System.out.println("토큰 시작 "+tokenJson);
 		Gson gson = new Gson();
 		Token token = gson.fromJson(tokenJson, Token.class);
 		String access_token=token.getAccess_token();
 		request.setAttribute("access_token", access_token);
 		System.out.println("it's a token "+access_token);
+		HttpSession session = request.getSession();
+		session.setAttribute("token", access_token);
 		//String ret = getHttpConnection("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + token.getAccess_token());
 		//System.out.println("ret = "+ret);
+		
+		
+		Connection con;
+		Statement stmt;
+		try {
+			con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl","system","1511");
+			stmt=con.createStatement();
+			String query2 = "update userlist set token ='"+access_token+"' where id='"+session.getAttribute("id")+"'";
+			System.out.println(query2);
+			stmt.executeQuery(query2);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		dis=request.getRequestDispatcher("/tempResult.jsp");
 		dis.forward(request, response);
 	}
@@ -78,7 +99,7 @@ public class Redirect extends HttpServlet {
 			}
 		}
 		int responseCode = conn.getResponseCode();
-		System.out.println(responseCode);
+		System.out.println("response code = "+responseCode);
 		String line;
 		StringBuffer buffer = new StringBuffer();
 		try (InputStream stream = conn.getInputStream()) {
